@@ -6,7 +6,7 @@
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QFileDialog,
     QListWidget, QListWidgetItem, QGroupBox, QTableWidget, QTableWidgetItem, QHeaderView,
-    QComboBox, QApplication
+    QComboBox, QApplication, QMessageBox, QInputDialog, QLineEdit
 )
 from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtCore import Qt
@@ -136,6 +136,37 @@ class ProfileWidget(QWidget):
         appearance_group.setLayout(appearance_layout)
         main_layout.addWidget(appearance_group)
 
+        # 系统设置（数据库重置）
+        system_group = QGroupBox('系统设置')
+        system_group.setStyleSheet('QGroupBox { padding-top: 20px; margin-top: 10px; }')
+        system_layout = QVBoxLayout()
+        system_layout.setContentsMargins(12, 12, 12, 12)
+        system_layout.setSpacing(10)
+
+        reset_db_row = QHBoxLayout()
+        reset_db_label = QLabel('重置学习记录：清空所有个人数据，保留题库和考试（不可恢复）')
+        reset_db_label.setStyleSheet(f'color: {THEME_COLORS["danger"]};')
+        reset_db_btn = QPushButton('🗑️ 重置学习记录')
+        reset_db_btn.setStyleSheet(f'''
+            QPushButton {{
+                background-color: {THEME_COLORS["danger"]};
+                color: white;
+                font-weight: 600;
+                padding: 10px 20px;
+                border-radius: 8px;
+            }}
+            QPushButton:hover {{
+                background-color: #dc3545;
+            }}
+        ''')
+        reset_db_btn.clicked.connect(self.reset_database)
+        reset_db_row.addWidget(reset_db_label)
+        reset_db_row.addStretch()
+        reset_db_row.addWidget(reset_db_btn)
+        system_layout.addLayout(reset_db_row)
+
+        system_group.setLayout(system_layout)
+        main_layout.addWidget(system_group)
 
         self.setLayout(main_layout)
 
@@ -320,3 +351,88 @@ class ProfileWidget(QWidget):
             else:
                 f.setPointSize(int(12 * scale))
             app.setFont(f)
+
+    def reset_database(self):
+        """重置学习记录：清空所有个人学习数据，保留题库和考试"""
+        # 第一次确认
+        reply1 = QMessageBox.warning(
+            self,
+            '⚠️ 危险操作',
+            '您确定要重置学习记录吗？\n\n'
+            '此操作将：\n'
+            '• 清空所有学习记录\n'
+            '• 清空所有练习记录\n'
+            '• 清空所有错题记录\n'
+            '• 清空所有考试记录\n'
+            '• 回到初始状态（题库和考试保留）\n\n'
+            '⚠️ 此操作不可恢复！',
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+
+        if reply1 != QMessageBox.Yes:
+            return
+
+        # 第二次确认（要求输入确认文字）
+        text, ok = QInputDialog.getText(
+            self,
+            '最终确认',
+            '请输入 "确认重置" 来执行此操作：',
+            QLineEdit.Normal,
+            ''
+        )
+
+        if not ok or text.strip() != '确认重置':
+            QMessageBox.information(self, '已取消', '学习记录重置操作已取消。')
+            return
+
+        # 执行重置
+        try:
+            # 只清空用户相关的记录表，保留题库、知识点、考试等数据
+            db_manager.connect()
+
+            # 1. 先删除答题详情（有外键约束，需要先删除）
+            db_manager.execute_update('''
+                DELETE FROM exam_answers
+                WHERE exam_record_id IN (
+                    SELECT id FROM exam_records WHERE user_id = ?
+                )
+            ''', (self.current_user.id,))
+
+            # 2. 清空考试记录
+            db_manager.execute_update('DELETE FROM exam_records WHERE user_id = ?', (self.current_user.id,))
+
+            # 3. 清空学习记录
+            db_manager.execute_update('DELETE FROM learning_records WHERE user_id = ?', (self.current_user.id,))
+
+            # 4. 清空练习记录
+            db_manager.execute_update('DELETE FROM practice_records WHERE user_id = ?', (self.current_user.id,))
+
+            # 5. 清空错题本
+            db_manager.execute_update('DELETE FROM wrong_questions WHERE user_id = ?', (self.current_user.id,))
+
+            # 6. 清空学习统计
+            db_manager.execute_update('DELETE FROM study_statistics WHERE user_id = ?', (self.current_user.id,))
+
+            db_manager.disconnect()
+
+            QMessageBox.information(
+                self,
+                '✅ 重置成功',
+                '学习记录已成功清空！\n\n'
+                '题库、知识点和考试已保留。\n'
+                '程序将在3秒后自动退出，请重新启动程序。'
+            )
+
+            # 延迟退出程序
+            from PyQt5.QtCore import QTimer
+            QTimer.singleShot(3000, lambda: QApplication.instance().quit())
+
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                '❌ 重置失败',
+                f'学习记录重置失败：\n\n{str(e)}\n\n'
+                '请检查错误信息或联系管理员。'
+            )
+            db_manager.disconnect()
