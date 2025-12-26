@@ -150,7 +150,7 @@ class LoginWindow(QWidget):
 
         # 登录按钮
         self.login_button = QPushButton('登录')
-        self.login_button.setFont(QFont('Microsoft YaHei', 15, QFont.Bold))
+        self.login_button.setFont(QFont('Microsoft YaHei', 26, QFont.Bold))
         self.login_button.setMinimumHeight(56)
         self.login_button.setCursor(Qt.PointingHandCursor)
         self.login_button.setStyleSheet(f'''

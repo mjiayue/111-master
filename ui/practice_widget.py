@@ -154,21 +154,29 @@ class PracticeWidget(QWidget):
 
         # 底部按钮
         button_layout = QHBoxLayout()
+        button_layout.setSpacing(12)
+        button_layout.setContentsMargins(0, 12, 0, 12)
 
-        self.prev_btn = QPushButton('⬅️ 上一题')
-        self.prev_btn.setFont(QFont('Microsoft YaHei', 10))
+        self.prev_btn = QPushButton('上一题')
+        self.prev_btn.setFont(QFont('Microsoft YaHei', 13))
+        try:
+            from PyQt5.QtWidgets import QSizePolicy
+            self.prev_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        except Exception:
+            pass
+        self.prev_btn.setMinimumHeight(70)
         self.prev_btn.clicked.connect(self.prev_question)
         self.prev_btn.setEnabled(False)
         button_layout.addWidget(self.prev_btn)
 
-        self.submit_btn = QPushButton('✓ 提交答案')
-        self.submit_btn.setFont(QFont('Microsoft YaHei', 10, QFont.Bold))
+        self.submit_btn = QPushButton('提交答案')
+        self.submit_btn.setFont(QFont('Microsoft YaHei', 13, QFont.Bold))
         self.submit_btn.setStyleSheet(f'''
             QPushButton {{
                 background-color: {THEME_COLORS["primary"]};
                 color: white;
-                padding: 8px 20px;
-                border-radius: 5px;
+                padding: 10px 20px;
+                border-radius: 8px;
             }}
             QPushButton:hover {{
                 background-color: #1976D2;
@@ -177,12 +185,24 @@ class PracticeWidget(QWidget):
                 background-color: #CCCCCC;
             }}
         ''')
+        try:
+            from PyQt5.QtWidgets import QSizePolicy
+            self.submit_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        except Exception:
+            pass
+        self.submit_btn.setMinimumHeight(70)
         self.submit_btn.clicked.connect(self.submit_answer)
         self.submit_btn.setEnabled(False)
         button_layout.addWidget(self.submit_btn)
 
-        self.next_btn = QPushButton('➡️ 下一题')
-        self.next_btn.setFont(QFont('Microsoft YaHei', 10))
+        self.next_btn = QPushButton('下一题')
+        self.next_btn.setFont(QFont('Microsoft YaHei', 13))
+        try:
+            from PyQt5.QtWidgets import QSizePolicy
+            self.next_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        except Exception:
+            pass
+        self.next_btn.setMinimumHeight(70)
         self.next_btn.clicked.connect(self.next_question)
         self.next_btn.setEnabled(False)
         button_layout.addWidget(self.next_btn)

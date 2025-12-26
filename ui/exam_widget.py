@@ -188,10 +188,13 @@ class ExamWidget(QWidget):
         ''')
         layout.addWidget(self.progress_bar)
 
-        # 题目显示区域
+        # 题目显示区域（固定高度，保证题目位置稳定）
         self.question_widget = QWidget()
         self.question_layout = QVBoxLayout()
+        self.question_layout.setContentsMargins(0, 0, 0, 0)
         self.question_widget.setLayout(self.question_layout)
+        self.question_widget.setMinimumHeight(480)
+        self.question_widget.setMaximumHeight(480)
 
         scroll = QScrollArea()
         scroll.setWidget(self.question_widget)
@@ -207,27 +210,45 @@ class ExamWidget(QWidget):
 
         # 导航按钮
         nav_layout = QHBoxLayout()
+        nav_layout.setSpacing(12)
+        nav_layout.setContentsMargins(0, 12, 0, 12)
 
-        self.prev_button = QPushButton('⬅️ 上一题')
-        self.prev_button.setFont(QFont('Microsoft YaHei', 11))
-        self.prev_button.setMinimumHeight(45)
+        self.prev_button = QPushButton('上一题')
+        self.prev_button.setFont(QFont('Microsoft YaHei', 13))
+        self.prev_button.setMinimumHeight(70)
+        try:
+            from PyQt5.QtWidgets import QSizePolicy
+            self.prev_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        except Exception:
+            pass
         self.prev_button.clicked.connect(self.prev_question)
         nav_layout.addWidget(self.prev_button)
 
-        self.next_button = QPushButton('下一题 ➡️')
-        self.next_button.setFont(QFont('Microsoft YaHei', 11))
-        self.next_button.setMinimumHeight(45)
+        self.next_button = QPushButton('下一题')
+        self.next_button.setFont(QFont('Microsoft YaHei', 13))
+        self.next_button.setMinimumHeight(70)
+        try:
+            from PyQt5.QtWidgets import QSizePolicy
+            self.next_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        except Exception:
+            pass
         self.next_button.clicked.connect(self.next_question)
         nav_layout.addWidget(self.next_button)
 
-        self.submit_exam_button = QPushButton('✓ 提交考试')
-        self.submit_exam_button.setFont(QFont('Microsoft YaHei', 11, QFont.Bold))
-        self.submit_exam_button.setMinimumHeight(45)
+        self.submit_exam_button = QPushButton('提交考试')
+        self.submit_exam_button.setFont(QFont('Microsoft YaHei', 13, QFont.Bold))
+        self.submit_exam_button.setMinimumHeight(70)
+        try:
+            from PyQt5.QtWidgets import QSizePolicy
+            self.submit_exam_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        except Exception:
+            pass
         self.submit_exam_button.setStyleSheet(f'''
             QPushButton {{
                 background-color: {THEME_COLORS["primary"]};
                 color: white;
                 border-radius: 8px;
+                padding: 10px 20px;
             }}
             QPushButton:hover {{
                 background-color: #4a8fc7;
@@ -422,15 +443,15 @@ class ExamWidget(QWidget):
 
         # 题目标题
         title_label = QLabel(f"第 {self.current_question_index + 1} 题 ({question['score']}分)")
-        title_label.setFont(QFont('Microsoft YaHei', 13, QFont.Bold))
+        title_label.setFont(QFont('Microsoft YaHei', 14, QFont.Bold))
         title_label.setStyleSheet(f'color: {THEME_COLORS["primary"]}; padding: 10px;')
         self.question_layout.addWidget(title_label)
 
         # 题目内容
         question_label = QLabel(f"<b>{question['question']}</b>")
         question_label.setWordWrap(True)
-        question_label.setFont(QFont('Microsoft YaHei', 11))
-        question_label.setStyleSheet('padding: 10px; background-color: #f9f9f9; border-radius: 5px;')
+        question_label.setFont(QFont('Microsoft YaHei', 15))
+        question_label.setStyleSheet('padding: 10px; background-color: white; border-radius: 5px;')
         self.question_layout.addWidget(question_label)
 
         # 根据题型显示答题区域
@@ -445,12 +466,13 @@ class ExamWidget(QWidget):
             self.show_coding_question(question)
         else:
             # 如果类型不匹配，显示警告
-            warning_label = QLabel(f'⚠️ 未知题型: {q_type}')
+            warning_label = QLabel(f'未知题型: {q_type}')
             warning_label.setFont(QFont('Microsoft YaHei', 10))
             warning_label.setStyleSheet('color: red; padding: 10px;')
             self.question_layout.addWidget(warning_label)
 
-        self.question_layout.addStretch()
+        # 由于固定了高度，不再需要 addStretch() 来填充剩余空间
+
 
     def show_choice_question(self, question):
         """显示选择题"""
@@ -474,8 +496,8 @@ class ExamWidget(QWidget):
             self.button_group = QButtonGroup()
             for i, option in enumerate(options):
                 radio = QRadioButton(f"{chr(65+i)}. {option}")
-                radio.setFont(QFont('Microsoft YaHei', 10))
-                radio.setStyleSheet('padding: 8px;')
+                radio.setFont(QFont('Microsoft YaHei', 13))
+                radio.setStyleSheet('padding: 8px; background-color: white;')
                 self.button_group.addButton(radio, i)
 
                 # 恢复之前的答案
@@ -505,14 +527,14 @@ class ExamWidget(QWidget):
         self.button_group = QButtonGroup()
 
         true_radio = QRadioButton('正确')
-        true_radio.setFont(QFont('Microsoft YaHei', 10))
-        true_radio.setStyleSheet('padding: 8px;')
+        true_radio.setFont(QFont('Microsoft YaHei', 13))
+        true_radio.setStyleSheet('padding: 8px; background-color: white;')
         self.button_group.addButton(true_radio, 1)
         self.question_layout.addWidget(true_radio)
 
         false_radio = QRadioButton('错误')
-        false_radio.setFont(QFont('Microsoft YaHei', 10))
-        false_radio.setStyleSheet('padding: 8px;')
+        false_radio.setFont(QFont('Microsoft YaHei', 13))
+        false_radio.setStyleSheet('padding: 8px; background-color: white;')
         self.button_group.addButton(false_radio, 0)
         self.question_layout.addWidget(false_radio)
 

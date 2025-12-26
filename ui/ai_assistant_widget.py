@@ -190,7 +190,8 @@ class FloatingAssistant(QWidget):
         header_frame = QFrame()
         header_frame.setLayout(header)
         header_frame.setStyleSheet("background-color: #FAFAFA; border-bottom: 1px solid #E0E0E0;")
-        header_frame.setMaximumHeight(75)
+        header_frame.setMinimumHeight(90)
+        header_frame.setMaximumHeight(95)
         self.panel_layout.addWidget(header_frame)
 
         # ===== 聊天区（可滚动）=====
@@ -282,14 +283,14 @@ class FloatingAssistant(QWidget):
             QPushButton#sendBtn:pressed {{ background-color: #FFB700; }}
             QPushButton#sendBtn:disabled {{ background-color: #E0E0E0; color: #999; }}
             QPushButton:hover {{ background: {softer_blue}; }}
-            QPushButton:pressed {{ transform: scale(0.98); }}
+            QPushButton:pressed {{ background: rgba(0,0,0,0.04); }}
             QFrame {{ background: #FAFAFA; border-radius: 16px; border: 1px solid {border_blue}; }}
             QTextBrowser#responseView {{ 
                 background: white; 
                 border-radius: 0px; 
                 padding: 12px; 
                 border: none; 
-                font-size: 20px; 
+                font-size: 26px; 
                 line-height: 1.6;
             }}
             QTextEdit#inputBox {{ 
@@ -543,7 +544,7 @@ class FloatingAssistant(QWidget):
                 f"<td style='vertical-align:bottom; padding-left:10px;'>{avatar_html}</td></tr>"
                 f"<tr><td colspan='2' style='text-align:right;'>"
                 f"<div style='display:inline-block; max-width:70%; background:#FFD700; color:#111; padding:14px 18px; "
-                f"border-radius:15px 15px 4px 15px; border:none; font-size:21px; line-height:1.7; word-wrap: break-word;'>"
+                f"border-radius:15px 15px 4px 15px; border:none; font-size:28px; line-height:1.7; word-wrap: break-word;'>"
                 f"{body_html}</div></td></tr></table>"
             )
         else:
@@ -559,7 +560,7 @@ class FloatingAssistant(QWidget):
                 f"<td width='100%'></td></tr>"
                 f"<tr><td colspan='2' style='text-align:left;'>"
                 f"<div style='display:inline-block; max-width:70%; background:#F5F5F5; color:#111; padding:14px 18px; "
-                f"border-radius:15px 15px 15px 4px; border:1px solid #E0E0E0; font-size:21px; line-height:1.7; word-wrap: break-word;'>"
+                f"border-radius:15px 15px 15px 4px; border:1px solid #E0E0E0; font-size:28px; line-height:1.7; word-wrap: break-word;'>"
                 f"{formatted_content}</div></td></tr></table>"
             )
 

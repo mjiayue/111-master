@@ -40,7 +40,7 @@ class KnowledgeWidget(QWidget):
         left_layout = QVBoxLayout(left_widget)
 
         # 分类列表
-        category_label = QLabel('📂 知识点分类')
+        category_label = QLabel('知识点分类')
         category_label.setFont(QFont('Microsoft YaHei', 13, QFont.Bold))
         left_layout.addWidget(category_label)
 
@@ -51,7 +51,7 @@ class KnowledgeWidget(QWidget):
         left_layout.addWidget(self.category_list)
 
         # 知识点列表
-        knowledge_label = QLabel('📚 知识点列表')
+        knowledge_label = QLabel('知识点列表')
         knowledge_label.setFont(QFont('Microsoft YaHei', 13, QFont.Bold))
         left_layout.addWidget(knowledge_label)
 
@@ -77,8 +77,14 @@ class KnowledgeWidget(QWidget):
 
         title_layout.addStretch()
 
-        self.mark_complete_btn = QPushButton('✓ 标记为已完成')
-        self.mark_complete_btn.setFont(QFont('Microsoft YaHei', 11))
+        self.mark_complete_btn = QPushButton('标记为已完成')
+        self.mark_complete_btn.setFont(QFont('Microsoft YaHei', 12))
+        try:
+            from PyQt5.QtWidgets import QSizePolicy
+            self.mark_complete_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        except Exception:
+            pass
+        self.mark_complete_btn.setMinimumHeight(44)
         self.mark_complete_btn.clicked.connect(self.mark_as_completed)
         self.mark_complete_btn.setEnabled(False)
         title_layout.addWidget(self.mark_complete_btn)
@@ -100,7 +106,7 @@ class KnowledgeWidget(QWidget):
         right_layout.addLayout(progress_layout)
 
         # 知识点内容
-        content_group = QGroupBox('📝 知识点内容')
+        content_group = QGroupBox('知识点内容')
         content_group.setFont(QFont('Microsoft YaHei', 12, QFont.Bold))
         content_group.setStyleSheet('QGroupBox { padding-top: 20px; margin-top: 10px; }')
         content_layout = QVBoxLayout()
@@ -114,7 +120,7 @@ class KnowledgeWidget(QWidget):
         right_layout.addWidget(content_group, 3)
 
         # 代码示例
-        code_group = QGroupBox('💻 代码示例')
+        code_group = QGroupBox('代码示例')
         code_group.setFont(QFont('Microsoft YaHei', 12, QFont.Bold))
         code_group.setStyleSheet('QGroupBox { padding-top: 22px; margin-top: 2px; }')  # 减小上边距让代码框上移
         code_layout = QVBoxLayout()
@@ -136,7 +142,7 @@ class KnowledgeWidget(QWidget):
         right_layout.addWidget(code_group, 2)  # 增加代码示例区域比例
 
         # 学习时长显示
-        self.time_label = QLabel('📊 学习时长: 0 秒')
+        self.time_label = QLabel('学习时长: 0 秒')
         self.time_label.setFont(QFont('Microsoft YaHei', 11))
         right_layout.addWidget(self.time_label)
 

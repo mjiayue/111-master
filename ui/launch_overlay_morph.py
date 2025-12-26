@@ -144,7 +144,7 @@ class LaunchOverlay(QWidget):
                 background-color: #B3E5FC;
             }
             QPushButton:pressed {
-                transform: scale(0.97);
+                background-color: #A8D8F0;
             }
         ''')
         # 添加阴影效果

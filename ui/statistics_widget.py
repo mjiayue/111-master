@@ -4,7 +4,7 @@
 显示用户的成绩统计和数据分析图表
 """
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox,
-                             QTableWidget, QTableWidgetItem, QHeaderView, QComboBox)
+                             QTableWidget, QTableWidgetItem, QHeaderView, QComboBox, QSizePolicy)
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from utils.data_loader import DataLoader
@@ -32,28 +32,33 @@ class StatisticsWidget(QWidget):
     def init_ui(self):
         """初始化界面"""
         main_layout = QVBoxLayout()
-        main_layout.setContentsMargins(10, 10, 10, 10)
+        # 顶部边距设为 0，使标题紧贴顶端
+        main_layout.setContentsMargins(10, 0, 10, 10)
 
         # 标题
         title_label = QLabel('成绩统计分析')
-        title_label.setObjectName('pageTitle')
+        # 不使用全局 pageTitle，避免过大内边距
         title_label.setFont(QFont('SF Pro Display', 18, QFont.Bold))
-        title_label.setStyleSheet(f'color: {THEME_COLORS["primary"]};')
+        title_label.setStyleSheet(f'color: {THEME_COLORS["primary"]}; padding: 0px 6px; margin: 0px;')
         main_layout.addWidget(title_label)
 
-        # 图表区域
+        # 图表区域（占满剩余空间）
         charts_layout = QHBoxLayout()
-        charts_layout.setSpacing(12)
+        charts_layout.setContentsMargins(0, 0, 0, 0)
+        charts_layout.setSpacing(10)
 
         # 分类准确率饼图
         accuracy_group = QGroupBox('各分类准确率')
         accuracy_group.setFont(QFont('SF Pro Display', 13, QFont.Bold))
-        accuracy_group.setStyleSheet('QGroupBox { padding-top: 20px; margin-top: 10px; }')
+        accuracy_group.setStyleSheet('QGroupBox { padding-top: 28px; margin-top: 0px; } QGroupBox::title { left: 10px; top: 6px; }')
+        accuracy_group.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         accuracy_layout = QVBoxLayout()
+        accuracy_layout.setContentsMargins(8, 18, 8, 8)
 
         self.accuracy_figure = Figure(figsize=(7, 5))
         self.accuracy_canvas = FigureCanvas(self.accuracy_figure)
-        self.accuracy_canvas.setMinimumHeight(420)
+        self.accuracy_canvas.setMinimumHeight(0)
+        self.accuracy_canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         accuracy_layout.addWidget(self.accuracy_canvas)
 
         accuracy_group.setLayout(accuracy_layout)
@@ -62,18 +67,26 @@ class StatisticsWidget(QWidget):
         # 题型分布柱状图
         type_group = QGroupBox('题型练习分布')
         type_group.setFont(QFont('SF Pro Display', 13, QFont.Bold))
-        type_group.setStyleSheet('QGroupBox { padding-top: 20px; margin-top: 10px; }')
+        type_group.setStyleSheet('QGroupBox { padding-top: 28px; margin-top: 0px; } QGroupBox::title { left: 10px; top: 6px; }')
+        type_group.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         type_layout = QVBoxLayout()
+        type_layout.setContentsMargins(8, 18, 8, 8)
 
         self.type_figure = Figure(figsize=(7, 5))
         self.type_canvas = FigureCanvas(self.type_figure)
-        self.type_canvas.setMinimumHeight(420)
+        self.type_canvas.setMinimumHeight(0)
+        self.type_canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         type_layout.addWidget(self.type_canvas)
 
         type_group.setLayout(type_layout)
         charts_layout.addWidget(type_group)
 
         main_layout.addLayout(charts_layout)
+        # 让图表区域占满剩余空间
+        main_layout.setStretch(0, 0)  # 标题不伸展
+        main_layout.setStretch(1, 1)  # 图表伸展
+        charts_layout.setStretch(0, 1)
+        charts_layout.setStretch(1, 1)
 
 
         self.setLayout(main_layout)

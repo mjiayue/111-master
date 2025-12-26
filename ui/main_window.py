@@ -287,7 +287,6 @@ class MainWindow(QMainWindow):
             }}
             QListWidget#navList::item:hover {{
                 background-color: rgba(0,0,0,0.06);
-                transform: none;
             }}
             /* 卡片与控件半透明，透出底色 */
             QGroupBox {{
@@ -352,7 +351,7 @@ class MainWindow(QMainWindow):
                 background-color: rgba(0,0,0,0.03);
             }}
             QPushButton:pressed {{
-                transform: scale(0.995);
+                background-color: rgba(0,0,0,0.05);
             }}
         """
         self.setStyleSheet(style)
@@ -512,7 +511,7 @@ class MainWindow(QMainWindow):
         """窗口关闭事件"""
         reply = QMessageBox.question(
             self, '确认退出',
-            '确定要退出Python学习教辅系统吗？',
+            '确定退出PyPalPrep吗？',
             QMessageBox.Yes | QMessageBox.No,
             QMessageBox.No
         )
